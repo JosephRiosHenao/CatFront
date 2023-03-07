@@ -1,11 +1,29 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import { useState, useCallback } from 'react';
+import type { MouseEventHandler } from 'react'
+import { LazyImage } from '@/components/LazyImage'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+
+  
+  const random = ():number => Math.floor(Math.random()*300)+50;
+  const generateId = ():string => Math.random().toString(36).substring(2,9);
+
+
+  const [images, setImages] = useState<ImageItem[]>([])
+
+  const addCat:MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.preventDefault()
+
+    const newCat:ImageItem = {id: generateId(), url: `https://placekitten.com/${random()}/${random()}`};
+    setImages([
+      ...images, newCat
+    ])
+  }
+
   return (
     <>
       <Head>
@@ -17,6 +35,16 @@ export default function Home() {
       
       <main>
         <h1>Hola</h1>
+        <button onClick={addCat}>Add new Cat</button>
+
+        {images.map((image, index) => (
+          <div className="p-4" key={image.id}>
+            <LazyImage width={320} height={320} className="rounded bg-gray-300" src={image.url} 
+              onLazyLoad={(img) => {console.log(`Image #${index+1} cargada. Node: `,img)}}/>
+          </div>
+        ))}
+
+
       </main>
     </>
   )
